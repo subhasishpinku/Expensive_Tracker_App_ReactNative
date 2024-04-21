@@ -1,5 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+//https://reactnavigation.org/docs/getting-started/
+//npm install @react-navigation/native
+//npm install react-native-screens react-native-safe-area-context
+//npm install @react-navigation/native-stack
+//npm install @react-navigation/bottom-tabs
 
 export default function App() {
   return (
