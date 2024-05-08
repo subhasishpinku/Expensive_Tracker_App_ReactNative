@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { Text, View, StyleSheet, TextInput} from 'react-native';
 import IconButton from '../components/UI/IconButton';
 import { GlobalStyles } from '../constants/styles';
@@ -6,8 +6,15 @@ import Button from '../components/UI/Button';
 import { ExpensesContext } from '../store/expenses-context';
 import { useContext } from 'react';
 import ExpenseForm from '../components/ManageExpense/ExpenseForm';
-
+import { storeExpense, updateExpense, deleteExpense } from '../util/http';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import LoadingOverlay from '../components/UI/LoadingOverlay';
+import ErrorOverlay from '../components/UI/ErrorOverlay';
 function ManageExpense({ route, navigation }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState();
+
   const expensesCtx = useContext(ExpensesContext);
 
   const editedExpenseId = route.params?.expenseId;
@@ -20,36 +27,65 @@ function ManageExpense({ route, navigation }) {
     });
   }, [navigation, isEditing]);
 
-  function deleteExpenseHandler() {
+ async function deleteExpenseHandler() {
+   setIsSubmitting(true);
+   try{
+    await deleteExpense(editedExpenseId);
     expensesCtx.deleteExpense(editedExpenseId);
     navigation.goBack();
+   }catch (error){
+    setError('Could not delete expenses - please try again later');
+    setIsSubmitting(false);
+   }
+  
   }
 
   function cancelHandler() {
     navigation.goBack();
   }
 
-  function confirmHandler(expenseData) {
-    if (isEditing) {
-      // expensesCtx.updateExpense(
-      //   editedExpenseId,
-      //   {
-      //     description: 'Test!!!!',
-      //     amount: 29.99,
-      //     date: new Date('2022-05-20'),
-      //   }
-      // );
-      expensesCtx.updateExpense(editedExpenseId,expenseData);
-    } else {
-      // expensesCtx.addExpense({
-      //   description: 'Test',
-      //   amount: 19.99,
-      //   date: new Date('2022-05-19'),
-      // });
-      expensesCtx.addExpense(expenseData);
-
+ async function confirmHandler(expenseData) {
+    setIsSubmitting(true);
+    try{
+      if (isEditing) {
+        // expensesCtx.updateExpense(
+        //   editedExpenseId,
+        //   {
+        //     description: 'Test!!!!',
+        //     amount: 29.99,
+        //     date: new Date('2022-05-20'),
+        //   }
+        // );
+        expensesCtx.updateExpense(editedExpenseId,expenseData);
+       await updateExpense(editedExpenseId,expenseData);
+      } else {
+        // expensesCtx.addExpense({
+        //   description: 'Test',
+        //   amount: 19.99,
+        //   date: new Date('2022-05-19'),
+        // });
+         const id = await  storeExpense(expenseData)
+         expensesCtx.addExpense({...expenseData, id: id});
+  
+      }
+      navigation.goBack();
+    }catch (error){
+      setError('Could not save data - please try again later!');
+      setIsSubmitting(false);
     }
-    navigation.goBack();
+  }
+  function errorHandler() {
+   setError(null);
+  } 
+
+  if(error && !isSubmitting){
+    // return <ErrorOverlay message={error} onConfirm={errorHandler}/>
+    return <ErrorOverlay message={error}/>
+
+  }
+
+  if(isSubmitting){
+    return <LoadingOverlay/>
   }
 
   return (

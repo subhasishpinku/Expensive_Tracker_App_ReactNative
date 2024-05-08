@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "174888182460",
+    "firebase_url": "https://react-native-course-353be-default-rtdb.firebaseio.com",
+    "project_id": "react-native-course-353be",
+    "storage_bucket": "react-native-course-353be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174888182460:android:740904b33d18a53d1ae6b9",
+        "android_client_info": {
+          "package_name": "com.subhasishsingha.exprence_tracker_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeEQuPqMv8-rYB4D7VvymMG7SL2hXzUzA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
